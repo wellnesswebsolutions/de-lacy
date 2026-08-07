@@ -68,11 +68,13 @@ h1,h2,h3,h4{font-family:var(--serif);font-weight:500;line-height:1.06;text-wrap:
 
 /* announcement */
 .topbar{background:var(--wine-deep);color:var(--ivory);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400}
-.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:40px;gap:16px}
+.topbar .wrap{display:flex;align-items:center;justify-content:center;height:40px;gap:20px}
 .topbar .award{display:flex;align-items:center;gap:10px;color:var(--gold-soft)}
+.topbar .sep{color:rgba(243,235,221,.35);font-size:10px}
 .topbar a{color:var(--ivory);transition:color .3s}
 .topbar a:hover{color:var(--gold-soft)}
 .topbar .star{color:var(--gold)}
+.topbar .award-short{display:none}
 
 /* nav */
 .nav{position:fixed;top:40px;left:0;right:0;z-index:60;transition:top .3s ease,background .4s ease,box-shadow .4s ease,padding .4s ease}
@@ -255,8 +257,10 @@ section{position:relative}
   .nav-links{display:none}
   .nav .book{display:none}
   .burger{display:flex}
-  .topbar .wrap{justify-content:center;height:auto;min-height:40px;padding-top:7px;padding-bottom:7px}
-  .topbar .award{font-size:10px;letter-spacing:.12em;text-align:center}
+  .topbar .wrap{height:40px;gap:12px}
+  .topbar .award-full{display:none}
+  .topbar .award-short{display:inline}
+  .topbar .sep{display:none}
   .topbar .phone{display:none}
   .treat-grid{grid-template-columns:1fr;gap:18px}
   .tcard{aspect-ratio:4/3}
@@ -312,8 +316,13 @@ section{position:relative}
 
 <div class="topbar">
   <div class="wrap">
-    <span class="award"><span class="star">✦</span> Hair Salon of the Year 2020 — English Hair &amp; Beauty Awards</span>
-    <a class="phone" href="tel:01482887069">Beverley · 01482 887069</a>
+    <span class="award">
+      <span class="star">✦</span>
+      <span class="award-full">Hair Salon of the Year 2020 &mdash; English Hair &amp; Beauty Awards</span>
+      <span class="award-short">Salon of the Year 2020</span>
+    </span>
+    <span class="sep">·</span>
+    <a class="phone" href="tel:01482887069">01482 887069</a>
   </div>
 </div>
 
