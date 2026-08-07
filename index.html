@@ -319,7 +319,7 @@ section{position:relative}
 .di-transom-name{font-family:var(--serif);font-size:clamp(22px,2.8vw,36px);font-weight:500;letter-spacing:.06em;color:var(--wine);line-height:1}
 .di-transom-sub{font-family:var(--sans);font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:#6b5c5c}
 /* door panels */
-.di-door{position:absolute;top:84px;height:calc(100% - 84px);z-index:2;width:50%;background:var(--wine);will-change:transform;transition:transform 1.6s cubic-bezier(0.77,0,0.18,1)}
+.di-door{position:absolute;top:84px;height:calc(100% - 84px);z-index:2;width:50%;background:var(--wine);will-change:transform;transition:transform 0.85s cubic-bezier(0.55,0,0.1,1)}
 .di-door-l{left:0;transform-origin:left center;border-right:4px solid rgba(0,0,0,.5)}
 .di-door-r{right:0;transform-origin:right center;border-left:4px solid rgba(0,0,0,.5)}
 #door-intro.open .di-door-l{transform:perspective(1400px) rotateY(-105deg)}
@@ -327,12 +327,12 @@ section{position:relative}
 /* door edge molding */
 .di-face{position:absolute;inset:5% 8%;border:2px solid rgba(0,0,0,.28);box-shadow:inset 2px 2px 0 rgba(255,255,255,.07),inset -2px -2px 0 rgba(0,0,0,.2);pointer-events:none}
 .di-face::after{content:'';position:absolute;inset:8px;border:1px solid rgba(255,255,255,.07)}
-/* door handle */
-.di-knob{position:absolute;top:50%;width:11px;height:44px;border-radius:6px;background:linear-gradient(160deg,#edd87e 0%,#c9a84c 45%,#8b6a22 100%);box-shadow:0 2px 10px rgba(0,0,0,.55),inset 0 1px 2px rgba(255,255,255,.2);transform:translateY(-50%);pointer-events:none}
+/* door handle — at 68% so it sits below the text area */
+.di-knob{position:absolute;top:68%;width:11px;height:44px;border-radius:6px;background:linear-gradient(160deg,#edd87e 0%,#c9a84c 45%,#8b6a22 100%);box-shadow:0 2px 10px rgba(0,0,0,.55),inset 0 1px 2px rgba(255,255,255,.2);transform:translateY(-50%);pointer-events:none}
 .di-door-l .di-knob{right:16px}
 .di-door-r .di-knob{left:16px}
-/* gold seam */
-.di-seam{position:absolute;left:50%;top:84px;bottom:0;width:4px;margin-left:-2px;z-index:3;background:linear-gradient(180deg,#c9a84c,#7a5a1e,#c9a84c 60%,#7a5a1e 100%);box-shadow:0 0 14px rgba(201,168,76,.35);transition:opacity .15s .3s;pointer-events:none}
+/* seam — matches door panels so it doesn't cut through text */
+.di-seam{position:absolute;left:50%;top:84px;bottom:0;width:4px;margin-left:-2px;z-index:3;background:var(--wine);pointer-events:none}
 #door-intro.open .di-seam{opacity:0}
 /* hero content on door */
 .di-content{position:absolute;top:84px;left:0;right:0;bottom:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:32px 24px;transition:opacity .3s}
@@ -341,13 +341,20 @@ section{position:relative}
 .di-eyebrow-d{font-family:var(--sans);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-soft);display:block;margin-bottom:22px}
 .di-h1{font-family:var(--serif);font-size:clamp(38px,5.8vw,78px);font-weight:500;line-height:1.08;color:var(--ivory);margin:0 0 20px;letter-spacing:-.01em}
 .di-h1 .it{font-style:italic;color:var(--gold-soft)}
-.di-lead-d{font-size:clamp(14px,1.4vw,17px);font-weight:300;color:rgba(243,235,221,.8);max-width:500px;margin:0 auto 34px;line-height:1.72}
+.di-lead-d{font-size:clamp(14px,1.4vw,17px);font-weight:300;color:rgba(243,235,221,.8);max-width:400px;margin:0 auto 34px;line-height:1.72}
 .di-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.di-cta .btn-white{background:#fff;color:var(--wine);border-color:#fff}
+.di-cta .btn-white:hover{background:rgba(255,255,255,.9);transform:translateY(-3px)}
 /* scroll hint */
-.di-scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:6;color:rgba(212,178,105,.55);font-family:var(--sans);font-size:9px;letter-spacing:.28em;text-transform:uppercase;white-space:nowrap;animation:diHint 2.4s ease-in-out infinite;pointer-events:none;transition:opacity .4s}
+.di-scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:6;color:var(--gold-soft);font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;white-space:nowrap;animation:diHint 2s ease-in-out infinite;pointer-events:none;transition:opacity .3s;text-shadow:0 0 20px rgba(201,168,76,.6)}
 #door-intro.open .di-scroll-hint{opacity:0}
 #door-intro.di-out{opacity:0;transition:opacity .5s ease;pointer-events:none}
 @keyframes diHint{0%,100%{opacity:.2}50%{opacity:.65}}
+@media(min-width:761px){
+  .di-cta{display:grid;grid-template-columns:1fr 1fr;column-gap:56px;max-width:none}
+  .di-cta a:first-child{justify-self:end}
+  .di-cta a:last-child{justify-self:start}
+}
 @media(max-width:760px){
   .di-transom{height:70px}
   .di-door{top:70px;height:calc(100% - 70px)}
@@ -380,8 +387,8 @@ section{position:relative}
       <h1 class="di-h1">The art of<br><span class="it">hair &amp; beauty,</span><br>perfected.</h1>
       <p class="di-lead-d">A boutique salon and spa in the heart of Beverley&rsquo;s Saturday Market &mdash; where an award-winning team makes every visit feel effortless.</p>
       <div class="di-cta">
-        <a href="https://delacysalons.co.uk/" target="_blank" rel="noopener" class="btn btn-gold">Book Appointment</a>
-        <a href="#treatments" class="btn btn-ghost">Explore Treatments</a>
+        <a href="https://delacysalons.co.uk/" target="_blank" rel="noopener" class="btn btn-gold" id="di-book-btn">Book Appointment</a>
+        <a href="#top" class="btn btn-white" id="di-explore-btn">Explore Treatments</a>
       </div>
     </div>
   </div>
@@ -720,26 +727,29 @@ section{position:relative}
     function openDoor(){
       if(opened)return;
       opened=true;
+      window.scrollTo(0,0);
       door.classList.add('open');
       setTimeout(function(){
         door.classList.add('di-out');
-        setTimeout(function(){door.style.display='none';},500);
-      },1450);
+        setTimeout(function(){door.style.display='none';},400);
+      },820);
     }
+    // buttons open door without bubbling (book also opens new tab via its href)
+    var bookBtn=document.getElementById('di-book-btn');
+    var exploreBtn=document.getElementById('di-explore-btn');
+    if(bookBtn) bookBtn.addEventListener('click',function(e){e.stopPropagation();openDoor();});
+    if(exploreBtn) exploreBtn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();openDoor();});
     door.addEventListener('click',openDoor);
     door.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' ')openDoor();});
     door.addEventListener('wheel',function(e){if(e.deltaY>0)openDoor();},{passive:true});
     var ty=0;
     door.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
     door.addEventListener('touchend',function(e){if(ty-e.changedTouches[0].clientY>30)openDoor();},{passive:true});
-    // prevent body scroll while door is showing
     function blockScroll(e){e.preventDefault();}
     document.addEventListener('touchmove',blockScroll,{passive:false});
-    var origOpenDoor=openDoor;
-    openDoor=function(){
-      document.removeEventListener('touchmove',blockScroll);
-      origOpenDoor();
-    };
+    var _open=openDoor;
+    openDoor=function(){document.removeEventListener('touchmove',blockScroll);_open();};
+    if(bookBtn) bookBtn.addEventListener('click',function(){document.removeEventListener('touchmove',blockScroll);});
   }
 
   var nav=document.getElementById('nav');
