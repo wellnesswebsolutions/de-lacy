@@ -724,14 +724,19 @@ section{position:relative}
   var door=document.getElementById('door-intro');
   if(door){
     var opened=false;
+    function blockWheel(e){e.preventDefault();}
+    document.addEventListener('wheel',blockWheel,{passive:false});
     function openDoor(){
       if(opened)return;
       opened=true;
-      window.scrollTo(0,0);
       door.classList.add('open');
       setTimeout(function(){
         door.classList.add('di-out');
-        setTimeout(function(){door.style.display='none';},400);
+        setTimeout(function(){
+          document.removeEventListener('wheel',blockWheel);
+          window.scrollTo({top:0,behavior:'instant'});
+          door.style.display='none';
+        },400);
       },820);
     }
     // buttons open door without bubbling (book also opens new tab via its href)
