@@ -776,8 +776,11 @@ section{position:relative}
       function render(){
         ticking=false;
         var p=clamp(window.scrollY/H,0,1), e=ease(p), a=e*105;
-        doorL.style.transform='perspective(1400px) rotateY('+(-a)+'deg)';
-        doorR.style.transform='perspective(1400px) rotateY('+a+'deg)';
+        // swing away from the viewer, into the salon. The other sign brings the
+        // panels toward the camera, where perspective magnifies them past the
+        // centre line and the two doors visibly cross each other.
+        doorL.style.transform='perspective(1400px) rotateY('+a+'deg)';
+        doorR.style.transform='perspective(1400px) rotateY('+(-a)+'deg)';
         doorL.style.filter=doorR.style.filter='brightness('+(1-e*0.35)+')';
         seam.style.opacity    = clamp(1-p/0.12,0,1);
         content.style.opacity = clamp(1-p/0.35,0,1);
