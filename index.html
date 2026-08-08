@@ -319,7 +319,8 @@ section{position:relative}
 #di-stage{height:90vh}
 /* offset by the 40px topbar so this box matches .hero exactly — otherwise the
    backdrop and the real hero are 40px apart and ghost during the final cross-fade */
-.di-bg{position:absolute;top:40px;left:0;right:0;bottom:-40px;z-index:0;background:url(images/hero.jpg) center/cover no-repeat}
+/* own layer, so the area the doors uncover isn't re-rasterised every frame */
+.di-bg{position:absolute;top:40px;left:0;right:0;bottom:-40px;z-index:0;background:url(images/hero.jpg) center/cover no-repeat;transform:translateZ(0)}
 /* must stay identical to .hero-bg::after or the hand-off flickers */
 .di-bg::after{content:"";position:absolute;inset:0;background:
   linear-gradient(105deg, rgba(42,13,19,.9) 0%, rgba(74,20,27,.72) 40%, rgba(42,13,19,.35) 100%),
@@ -330,7 +331,10 @@ section{position:relative}
 .di-transom-sub{font-family:var(--sans);font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:#6b5c5c}
 /* door panels */
 /* no transition — scroll position drives the transform every frame */
-.di-door{position:absolute;top:84px;bottom:var(--th);z-index:2;width:50%;background:var(--wine);will-change:transform,filter}
+.di-door{position:absolute;top:84px;bottom:var(--th);z-index:2;width:50%;background:var(--wine);will-change:transform;backface-visibility:hidden}
+/* face shading, driven by --shade on #door-intro. Opacity composites on the
+   GPU; the brightness() filter this replaces repainted the whole panel. */
+.di-door::after{content:'';position:absolute;inset:0;background:#180509;opacity:var(--shade,0);pointer-events:none}
 .di-door-l{left:0;transform-origin:left center;border-right:4px solid rgba(0,0,0,.5)}
 .di-door-r{right:0;transform-origin:right center;border-left:4px solid rgba(0,0,0,.5)}
 /* door edge molding */
@@ -774,36 +778,68 @@ section{position:relative}
     }else{
       if('scrollRestoration' in history) history.scrollRestoration='manual';
 
-      var H=1, ticking=false;
-      function measure(){ H=Math.max(1, stage.offsetHeight); }
+      var H=1, ticking=false, baseW=window.innerWidth;
+      // Fixed px, not 90vh. On mobile the URL bar collapses mid-scroll, which
+      // would resize a vh-based stage and make the doors jump under the finger.
+      function measure(){
+        var vh=window.innerHeight;
+        // a transient 0/tiny viewport mid-resize would collapse the stage and
+        // snap the doors straight open — keep the last good value instead
+        if(vh<200) return;
+        stage.style.height=Math.round(vh*0.9)+'px';
+        H=Math.max(1, stage.offsetHeight);
+      }
       function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
       // quad, not cubic: on a scrub the finger sets the timing, so a steep
       // ease-in reads as the doors ignoring you for the first third
       function ease(t){ return t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
 
+      // only touch the DOM when a value actually changes — on mobile the
+      // redundant writes cost more than the maths
+      var prev={};
+      function put(el,prop,v){
+        var k=prop+el.className;
+        if(prev[k]===v) return;
+        prev[k]=v;
+        if(prop.charAt(0)==='-') el.style.setProperty(prop,v); else el.style[prop]=v;
+      }
+
       function render(){
         ticking=false;
-        var p=clamp(window.scrollY/H,0,1), e=ease(p), a=e*105;
+        var p=clamp(window.scrollY/H,0,1);
+        if(p===prev.p) return;
+        prev.p=p;
+        var e=ease(p), a=(e*105).toFixed(2);
         // swing away from the viewer, into the salon. The other sign brings the
         // panels toward the camera, where perspective magnifies them past the
         // centre line and the two doors visibly cross each other.
-        doorL.style.transform='perspective(1400px) rotateY('+a+'deg)';
-        doorR.style.transform='perspective(1400px) rotateY('+(-a)+'deg)';
-        doorL.style.filter=doorR.style.filter='brightness('+(1-e*0.35)+')';
-        seam.style.opacity    = clamp(1-p/0.12,0,1);
-        content.style.opacity = clamp(1-p/0.35,0,1);
-        transom.style.opacity = clamp(1-(p-0.65)/0.35,0,1);
-        door.style.opacity    = clamp(1-(p-0.88)/0.12,0,1);
+        put(doorL,'transform','perspective(1400px) rotateY('+a+'deg)');
+        put(doorR,'transform','perspective(1400px) rotateY(-'+a+'deg)');
+        // shade via an opacity-only overlay: brightness() filters on two
+        // viewport-sized layers repaint every frame and stutter on phones
+        put(door,'--shade',(e*0.42).toFixed(3));
+        put(seam,'opacity',    clamp(1-p/0.12,0,1).toFixed(3));
+        put(content,'opacity', clamp(1-p/0.35,0,1).toFixed(3));
+        put(transom,'opacity', clamp(1-(p-0.65)/0.35,0,1).toFixed(3));
+        put(door,'opacity',    clamp(1-(p-0.88)/0.12,0,1).toFixed(3));
         // the hint keeps its pulse animation, so fade it through the keyframe factor
-        if(hint) hint.style.setProperty('--f', clamp(1-p/0.20,0,1));
+        if(hint) put(hint,'--f', clamp(1-p/0.20,0,1).toFixed(3));
         // visibility, not display — the overlay has to come back on the way up
-        door.style.visibility = p>=1 ? 'hidden' : 'visible';
-        door.style.pointerEvents = p>0.05 ? 'none' : 'auto';
+        put(door,'visibility', p>=1 ? 'hidden' : 'visible');
+        put(door,'pointerEvents', p>0.05 ? 'none' : 'auto');
       }
       function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(render); } }
 
       window.addEventListener('scroll',onScroll,{passive:true});
-      window.addEventListener('resize',function(){ measure(); onScroll(); });
+      window.addEventListener('resize',function(){
+        // ignore the height-only resize from the URL bar hiding; re-measuring
+        // there is exactly what makes the swing stutter on mobile
+        if(window.innerWidth===baseW) return;
+        baseW=window.innerWidth; measure(); prev.p=-1; onScroll();
+      });
+      window.addEventListener('orientationchange',function(){
+        baseW=window.innerWidth; measure(); prev.p=-1; onScroll();
+      });
       // rAF is paused in a background tab — resync on return
       document.addEventListener('visibilitychange',function(){ if(!document.hidden) onScroll(); });
       measure();
